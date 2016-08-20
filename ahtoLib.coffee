@@ -131,3 +131,33 @@ ahtoLib =
         # Find out if the current URL of the page matches a given regex.
         ###
         return regexp.test window.location.href
+
+    capitalizeWord: (word) -> # {{{1
+        ###
+        # "asdf" -> "Asdf"
+        ###
+        return word[0].toUpperCase() + word[1..]
+
+    bookCase: (name) -> # {{{1
+        ###
+        # Changes a string like "the cat is on the table" to
+        # "The Cat is on the Table"
+        ###
+
+        wordsToNotCapitalize = [
+            'of', 'in', 'on', 'and', 'the', 'an', 'a', 'with', 'to', 'for', 'from',
+            'be', 'is'
+        ]
+
+        name = name.split ' '
+
+        for i, word of name
+            if i == 0
+                # Always capitalize the first word.
+                name[i] = capitalizeWord word
+            else if word not in wordsToNotCapitalize
+                name[i] = capitalizeWord name[i]
+
+        name = name.join ' '
+        return name
+
