@@ -161,3 +161,66 @@ ahtoLib =
         name = name.join ' '
         return name
 
+    xeger: (s) -> # {{{1
+        ###
+        # Okay so this is supposed to be a 'backwards regex'. Given a regex, it
+        # will supposedly give you an array of all possible matches to that
+        # regex. (obviously it would throw an error on '+', '*', etc.) But so
+        # far it doesn't support many features at all. I'm adding features as
+        # I need them. Here's a list of everything that works right now:
+        #
+        # - nothing
+        ###
+
+        throw 'Not working yet! Sorry!'
+
+        # NOTE:
+        # 'a (b|(c|d))' -> ['a ', ['b', ['c', 'd']]]
+        # Might be easier to process from there.
+
+        getClosingParenIndex = (s) -> # {{{2
+            ###
+            # Give it a string starting with '(' and it'll find the index of
+            # the matching ')'. Returns -1 on failure.
+            ###
+            parenDepth = 0
+
+            for i, char of s
+                if s[i-1] == '\\' then continue
+
+                if char == '('
+                    parenDepth++
+                else if char == ')'
+                    parenDepth--
+
+                    if parenDepth == 0
+                        return i
+
+            return -1
+
+        splitByParens = (s) -> # {{{2
+            ###
+            # 'a (b|(c|d))' -> ['a ', ['b|', ['c|d']]]
+            # NOT WORKING YET
+            ###
+            parsedString = []
+
+            # This will get whittled down as we remove stuff.
+            stringLeft = s
+
+            while stringLeft.length > 0
+                if (ref = stringLeft.indexOf '(') != -1
+                    if stringLeft[ref-1] == '\\'
+                        parsedString.push stringLeft[..ref-1]
+                        stringLeft = stringLeft[ref..]
+                        continue
+
+                    parenIndicies = [ref, getClosingParenIndex s[i..]]
+
+                    # Intentionally skip over the outermost '(' and ')' (the ones we
+                    # just found)
+                    substring = s[parenIndicies[0]+1 .. parenIndicies[1]-1]
+
+                    # Intentionally skip over the '('
+                    parsedString.push s[.. parenIndicies[0]-1]
+                    stringLeft = stringLeft[parenIndicies[1]+1 ..]
