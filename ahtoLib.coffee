@@ -161,66 +161,72 @@ ahtoLib =
         name = name.join ' '
         return name
 
-    xeger: (s) -> # {{{1
+    choice: (arr) -> # {{{1
+        # Returns an element from an array at random.
+        arr[Math.floor(Math.random() * arr.length)]
+
+    choose: ahtoLib.choose
+
+    lstrip: (s) -> # {{{1
         ###
-        # Okay so this is supposed to be a 'backwards regex'. Given a regex, it
-        # will supposedly give you an array of all possible matches to that
-        # regex. (obviously it would throw an error on '+', '*', etc.) But so
-        # far it doesn't support many features at all. I'm adding features as
-        # I need them. Here's a list of everything that works right now:
-        #
-        # - nothing
+        # >>> ahtoLib.lstrip """
+        # ...    asdf
+        # ...        asdf
+        # ...    asdf
+        # ... """
+        # 'asdfasdfasdf'
         ###
 
-        throw 'Not working yet! Sorry!'
+    stringVariations: (s, multiline=false) -> # {{{1
+        ###
+        # Creates variations on a string.
+        # 'foo (bar|baz) (qux|quux)'
+        #       \/
+        # ['foo bar qux',
+        #  'foo baz qux',
+        #  'foo bar quux',
+        #  'foo baz quux']
+        ###
 
-        # NOTE:
-        # 'a (b|(c|d))' -> ['a ', ['b', ['c', 'd']]]
-        # Might be easier to process from there.
+        if multiline then s = ahtoLib.lstrip s
 
-        getClosingParenIndex = (s) -> # {{{2
-            ###
-            # Give it a string starting with '(' and it'll find the index of
-            # the matching ')'. Returns -1 on failure.
-            ###
-            parenDepth = 0
+        # 'foo (bar|baz) (qux|quux)'
+        #            \/
+        # ['foo ', ['bar', 'baz'], ['qux', 'quux']]
+        parsedString = s.split /[()]/
+        parsedString = (for i in parsedString
+                i = i.split '|'
 
-            for i, char of s
-                if s[i-1] == '\\' then continue
+                if i.length == 1
+                    i[0]
+                else i)
 
-                if char == '('
-                    parenDepth++
-                else if char == ')'
-                    parenDepth--
+        results = []
+        for v in parsedString
+            console.log v, typeof v
+            if results.length == 0
+                if typeof v == 'string'
+                    results.push v
+                else if typeof v[0] == 'string'
+                    results.push w for w in v
+            else
+                if typeof v == 'string'
+                    results = (i+v for i in results)
+                    console.log results
+                else if typeof v[0] == 'string'
+                    oldResults = results
+                    results = []
 
-                    if parenDepth == 0
-                        return i
+                    for option in v
+                        for oldResult in oldResults
+                            results.push oldResult + option
 
-            return -1
+                    console.log results
+                else
+                    throw "stringVariations: fail on #{v}"
 
-        splitByParens = (s) -> # {{{2
-            ###
-            # 'a (b|(c|d))' -> ['a ', ['b|', ['c|d']]]
-            # NOT WORKING YET
-            ###
-            parsedString = []
+        return results
 
-            # This will get whittled down as we remove stuff.
-            stringLeft = s
-
-            while stringLeft.length > 0
-                if (ref = stringLeft.indexOf '(') != -1
-                    if stringLeft[ref-1] == '\\'
-                        parsedString.push stringLeft[..ref-1]
-                        stringLeft = stringLeft[ref..]
-                        continue
-
-                    parenIndicies = [ref, getClosingParenIndex s[i..]]
-
-                    # Intentionally skip over the outermost '(' and ')' (the ones we
-                    # just found)
-                    substring = s[parenIndicies[0]+1 .. parenIndicies[1]-1]
-
-                    # Intentionally skip over the '('
-                    parsedString.push s[.. parenIndicies[0]-1]
-                    stringLeft = stringLeft[parenIndicies[1]+1 ..]
+    stringVariation: (s, multiline=false) -> # {{{1
+        ahtoLib.choice(
+            stringVariations(s, multiline))
