@@ -176,6 +176,31 @@ ahtoLib =
         # ... """
         # 'asdfasdfasdf'
         ###
+        # TODO
+        throw "not implemented!"
+
+    flatten: (arr) -> # {{{1
+        ###
+        # coffee> flatten [[1], 2, [[3], [4]]]
+        # [1, 2, [3], [4]]
+        ###
+        return [].concat arr...
+
+    flattenFully: (arr) -> # {{{1
+        ###
+        # coffee> flattenFully [[1], [2], [[3], [4]]]
+        # [1, 2, 3, 4]
+        ###
+        newArr = []
+
+        for i in arr
+            if not Array.isArray i
+                newArr.push i
+            else
+                newArr = newArr.concat flattenFully i
+
+        return newArr
+
 
     stringVariations: (s, multiline=false) -> # {{{1
         ###
