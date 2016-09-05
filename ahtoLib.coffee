@@ -214,6 +214,34 @@ ahtoLib =
         ###
         return [].concat arr...
 
+    getParameterByName: (name, url=window.location.href) -> # {{{1
+        ###
+        # Gets the URL parameters. Example:
+        # http://google.com/?q=asdf&foo=bar
+        # coffee> getParameterByName 'foo'
+        # 'bar'
+        ###
+        name = name.replace /[\[\]]/g, "\\$&"
+        regex = ///
+            [?&] #{name}
+            (
+                = ( [^&#]* )
+                | &
+                | \#
+                | $
+            )
+        ///
+
+        results = regex.exec url
+
+        if not results
+            return null
+        else if not results[2]
+            return ''
+        else
+            results = results[2].replace(/\+/g, ' ')
+            return decodeURIComponent results
+
     flattenFully: (arr) -> # {{{1
         ###
         # coffee> flattenFully [[1], [2], [[3], [4]]]
