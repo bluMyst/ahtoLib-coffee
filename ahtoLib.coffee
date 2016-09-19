@@ -165,7 +165,7 @@ ahtoLib =
         # Returns an element from an array at random.
         arr[Math.floor(Math.random() * arr.length)]
 
-    choose: ahtoLib.choose
+    choose: ahtoLib.choose # {{{1
 
     lstrip: (s) -> # {{{1
         ###
