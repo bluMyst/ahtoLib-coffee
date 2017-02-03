@@ -41,5 +41,7 @@ imgur =
                 console.log 'callback!', result
                 handleImgurUrl result.data.link
 
+    openTest: -> window.open 'http://example.com/'
+
     isAlreadyImgur: (imageUrl) ->
         return /^(https?:\/\/)?[^/]*imgur\.com/i.test imageUrl
