@@ -47,6 +47,7 @@ ahtoLib =
         setTimeout(interv, wait)
 
     stringHashCode: (s) -> # {{{1
+        # An insecure way to hash strings into ints.
         hash = 0
 
         for i in s
