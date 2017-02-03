@@ -23,9 +23,23 @@ imgur =
             console.log 'args:', arguments
 
     uploadAndRedditPost: (imageUrl, subreddit) ->
-        callback = (result) ->
-            window.open result.data.link
+        handleImgurUrl = (imgurUrl) ->
+            console.log 'got url', imgurUrl
+            #window.open imgurUrl
+            # Can only open one window at a time on Chrome unless it's an
+            # extension.
+            console.log 'opening', "https://www.reddit.com/r/" +
+                "#{subreddit}/submit?url=#{imgurUrl}"
+
             window.open "https://www.reddit.com/r/" +
-                "#{subreddit}/submit?url=#{info.data.link}"
+                "#{subreddit}/submit?url=#{imgurUrl}"
+
+        if @isAlreadyImgur imageUrl
+            handleImgurUrl imageUrl
+        else
+            @upload imageUrl, (result) ->
+                console.log 'callback!', result
+                handleImgurUrl result.data.link
 
     isAlreadyImgur: (imageUrl) ->
+        return /^(https?:\/\/)?[^/]*imgur\.com/i.test imageUrl
