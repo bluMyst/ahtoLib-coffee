@@ -19,7 +19,7 @@ imgur =
             success: callback
 
     testUpload: (url) ->
-        imgur.upload url, ->
+        @upload url, ->
             console.log 'args:', arguments
 
     uploadAndRedditPost: (imageUrl, subreddit) ->
